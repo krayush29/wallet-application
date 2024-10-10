@@ -46,6 +46,17 @@ class UserTest {
     }
 
     @Test
+    public void testUserValidationUsernameAndPasswordNull() {
+        User user = new User();
+        user.setUsername(null);
+        user.setPassword(null);
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+
+        assertEquals(2, violations.size());
+    }
+
+    @Test
     public void testUserValidationPasswordBlank() {
         User user = new User();
         user.setUsername("validUsername");

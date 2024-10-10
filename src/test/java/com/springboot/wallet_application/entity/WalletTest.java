@@ -1,13 +1,22 @@
 package com.springboot.wallet_application.entity;
 
+import com.springboot.wallet_application.exception.WalletException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WalletTest {
 
     @Test
-    public void testWalletBalance() {
+    public void testByDefaultWalletBalanceShouldBeZero() {
+        Wallet wallet = new Wallet();
+
+        assertEquals(0.0, wallet.getBalance());
+    }
+
+    @Test
+    public void testWalletBalanceWith100Amount() {
         Wallet wallet = new Wallet();
 
         wallet.setBalance(100.0);
@@ -16,7 +25,7 @@ class WalletTest {
     }
 
     @Test
-    public void testWalletUserAssociation() {
+    public void testWalletUserOneOnOneAssociation() {
         Wallet wallet = new Wallet();
 
         User user = new User();
@@ -28,5 +37,27 @@ class WalletTest {
 
         assertEquals(user, wallet.getUser());
         assertEquals(wallet, user.getWallet());
+    }
+
+    @Test
+    public void testDepositAmount50() {
+        Wallet wallet = new Wallet();
+        wallet.deposit(50.0);
+        assertEquals(50.0, wallet.getBalance());
+    }
+
+    @Test
+    public void testWithdrawAmount50outOf100() {
+        Wallet wallet = new Wallet();
+        wallet.deposit(100.0);
+        wallet.withdraw(50.0);
+        assertEquals(50.0, wallet.getBalance());
+    }
+
+    @Test
+    public void testWithdrawInsufficientBalance() {
+        Wallet wallet = new Wallet();
+        wallet.deposit(50.0);
+        assertThrows(WalletException.class, () -> wallet.withdraw(100.0));
     }
 }
