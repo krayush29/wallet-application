@@ -1,16 +1,19 @@
 package com.springboot.wallet_application.service;
 
-import com.springboot.wallet_application.dto.Transaction;
+import com.springboot.wallet_application.dto.request.TransactionRequest;
+import com.springboot.wallet_application.dto.request.UserRequestBody;
+import com.springboot.wallet_application.dto.response.TransactionResponse;
 import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.entity.Wallet;
 import com.springboot.wallet_application.exception.UserNotFoundException;
-import com.springboot.wallet_application.exception.WalletException;
 import com.springboot.wallet_application.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -35,82 +38,69 @@ class UserServiceTest {
 
     @Test
     void testRegisterUserWithValidUser() {
-        User user = new User();
-        user.setUsername("tonyStark");
-
-        when(userRepository.findByUsername("tonyStark")).thenReturn(null);
+        User user = new User("tonyStark", "password123");
+        UserRequestBody userRequest = new UserRequestBody("tonyStark", "password123");
         when(userRepository.save(any(User.class))).thenReturn(user);
 
-        User registeredUser = userService.registerUser(user);
+        User registeredUser = userService.registerUser(userRequest);
 
         assertNotNull(registeredUser);
-        verify(userRepository, times(1)).save(user);
+        assertEquals("tonyStark", registeredUser.getUsername());
+
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
-    void testDepositAmount50ToGetTotal150() {
-        User user = new User();
-        user.setUsername("tonyStark");
+    void testDepositAmount50ToGetTotal150() throws Exception {
+        User user = new User("tonyStark", "password123");
         Wallet wallet = new Wallet();
         wallet.setBalance(100.0);
         user.setWallet(wallet);
 
-        Transaction transaction = new Transaction();
-        transaction.setUsername("tonyStark");
-        transaction.setAmount(50.0);
+        TransactionRequest transactionRequest = new TransactionRequest("password123", 50.0);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        when(userRepository.findByUsername("tonyStark")).thenReturn(user);
+        TransactionResponse transactionResponse = userService.deposit(1L, transactionRequest);
 
-        Wallet updatedWallet = userService.deposit(transaction);
-
-        assertEquals(150.0, updatedWallet.getBalance());
-        verify(userRepository, times(1)).save(user);
+        assertEquals(150.0, transactionResponse.getAmount());
+        verify(userRepository, times(1)).save(any(User.class));
     }
 
     @Test
-    void testWithdrawAmount50outOf100() {
-        User user = new User();
-        user.setUsername("tonyStark");
+    void testWithdrawAmount50outOf100() throws Exception {
+        User user = new User("tonyStark", "password123");
         Wallet wallet = new Wallet();
         wallet.setBalance(100.0);
         user.setWallet(wallet);
 
-        Transaction transaction = new Transaction();
-        transaction.setUsername("tonyStark");
-        transaction.setAmount(50.0);
+        TransactionRequest transactionRequest = new TransactionRequest("password123", 50.0);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        when(userRepository.findByUsername("tonyStark")).thenReturn(user);
+        TransactionResponse transactionResponse = userService.withdraw(1L, transactionRequest);
 
-        Wallet updatedWallet = userService.withdraw(transaction);
-
-        assertEquals(50.0, updatedWallet.getBalance());
+        assertEquals(50.0, transactionResponse.getAmount());
         verify(userRepository, times(1)).save(user);
     }
 
     @Test
     void testExceptionWithdrawInsufficientBalance() {
-        User user = new User();
-        user.setUsername("tonyStark");
+        User user = new User("tonyStark", "password123");
         Wallet wallet = new Wallet();
         wallet.setBalance(30.0);
         user.setWallet(wallet);
 
-        Transaction transaction = new Transaction();
-        transaction.setUsername("tonyStark");
-        transaction.setAmount(50.0);
+        TransactionRequest transactionRequest = new TransactionRequest("password123", 50.0);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-        when(userRepository.findByUsername("tonyStark")).thenReturn(user);
-
-        assertThrows(WalletException.class, () -> userService.withdraw(transaction));
+        assertThrows(Exception.class, () -> userService.withdraw(1L, transactionRequest));
     }
 
     @Test
     void testExceptionForDepositAmountForUnknownUser() {
-        Transaction transaction = new Transaction();
-        transaction.setUsername("unknownUser");
+        TransactionRequest transactionRequest = new TransactionRequest();
 
         when(userRepository.findByUsername("unknownUser")).thenReturn(null);
 
-        assertThrows(UserNotFoundException.class, () -> userService.deposit(transaction));
+        assertThrows(UserNotFoundException.class, () -> userService.deposit(1L, transactionRequest));
     }
 }

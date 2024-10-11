@@ -44,6 +44,12 @@ public class User {
         this.wallet = new Wallet();
     }
 
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+        this.wallet = new Wallet();
+    }
+
     public void validateUser(String password) {
         if (!Objects.equals(this.password, password)) {
             throw new UserException("Invalid password for user: " + this.username);

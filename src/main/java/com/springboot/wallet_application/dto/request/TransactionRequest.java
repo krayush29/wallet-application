@@ -1,14 +1,15 @@
-package com.springboot.wallet_application.dto;
+package com.springboot.wallet_application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class Transaction {
-
-    @NotBlank
-    private String username;
+@AllArgsConstructor
+@NoArgsConstructor
+public class TransactionRequest {
 
     @NotBlank
     private String password;
