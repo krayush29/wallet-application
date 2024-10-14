@@ -1,7 +1,6 @@
 package com.springboot.wallet_application.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.springboot.wallet_application.exception.UserException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,8 +13,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -49,19 +46,5 @@ public class User {
         this.username = username;
         this.password = password;
         this.wallet = new Wallet();
-    }
-
-    public void validateUser(String password) {
-        if (!Objects.equals(this.password, password)) {
-            throw new UserException("Invalid password for user: " + this.username);
-        }
-    }
-
-    public void depositAmount(double amount) {
-        this.wallet.deposit(amount);
-    }
-
-    public void withdrawAmount(double amount) {
-        this.wallet.withdraw(amount);
     }
 }

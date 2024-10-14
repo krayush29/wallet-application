@@ -42,4 +42,9 @@ public class Wallet {
 
         this.balance -= amount;
     }
+
+    public void transfer(Wallet toWallet, double transferAmount) {
+        this.withdraw(transferAmount);
+        toWallet.deposit(transferAmount);
+    }
 }
