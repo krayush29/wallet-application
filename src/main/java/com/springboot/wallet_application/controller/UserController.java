@@ -30,8 +30,6 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody @Valid UserRequestBody UserRequestBody) {
-        // Implement the registerUser method here
-
         User userResponse;
         try {
             userResponse = userService.registerUser(UserRequestBody);
