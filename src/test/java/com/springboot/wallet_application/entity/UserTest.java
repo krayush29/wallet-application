@@ -46,10 +46,10 @@ class UserTest {
     }
 
     @Test
-    public void testUserValidationUsernameAndPasswordNull() {
+    public void testUserValidationUsernameAndPasswordBlank() {
         User user = new User();
-        user.setUsername(null);
-        user.setPassword(null);
+        user.setUsername("");
+        user.setPassword("");
 
         Set<ConstraintViolation<User>> violations = validator.validate(user);
 
@@ -67,9 +67,19 @@ class UserTest {
         assertEquals(1, violations.size());
     }
 
+    @Test
+    public void testUserValidationPasswordAndUsernameGreaterThan5Char() {
+        User user = new User();
+        user.setUsername("tony");
+        user.setPassword("1234");
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+
+        assertEquals(2, violations.size());
+    }
 
     @Test
-    public void testUserValidationPassword() {
+    public void testUserTwoUsersCannotBeSame() {
         User user1 = new User();
 
         User user2 = new User();

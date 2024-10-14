@@ -11,7 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,11 +28,12 @@ public class User {
     @Column(name = "user_id")
     private Long id;
 
-    @NotBlank
     @Column(unique = true, nullable = false)
+    @Size(min = 5, message = "Username should have at least 5 characters")
     private String username;
 
-    @NotBlank
+    @Column(nullable = false)
+    @Size(min = 5, message = "Password should have at least 5 characters")
     private String password;
 
     @OneToOne(cascade = CascadeType.ALL)
