@@ -69,7 +69,7 @@ class TransactionControllerTest {
 
         String requestBody = objectMapper.writeValueAsString(transactionRequest);
 
-        MvcResult mvcResult = mockMvc.perform(put("/transactions/withdraw")
+        MvcResult mvcResult = mockMvc.perform(put("/transactions/withdrawal")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestBody))
                 .andExpect(status().isOk())

@@ -35,8 +35,8 @@ public class TransactionController {
         return ResponseEntity.ok(transactionResponse);
     }
 
-    @PutMapping("/withdraw")
-    public ResponseEntity<Object> withdraw(@RequestBody @Valid TransactionRequest transactionRequest) {
+    @PutMapping("/withdrawal")
+    public ResponseEntity<Object> withdrawal(@RequestBody @Valid TransactionRequest transactionRequest) {
         TransactionResponse transactionResponse;
 
         try {
