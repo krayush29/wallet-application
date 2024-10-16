@@ -6,6 +6,7 @@ import com.springboot.wallet_application.dto.response.TransactionResponse;
 import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.entity.Wallet;
 import com.springboot.wallet_application.exception.WalletException;
+import com.springboot.wallet_application.repository.TransactionRepository;
 import com.springboot.wallet_application.repository.WalletRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class WalletServiceTest {
     @Mock
     private UserService userService;
 
+    @Mock
+    private TransactionRepository transactionRepository;
+
     @InjectMocks
     private WalletService walletService;
 
@@ -47,18 +51,18 @@ class WalletServiceTest {
     }
 
     @Test
-    void testDepositAmount50To100() throws Exception {
+    void testDepositAmount50FromCurrentUser() throws Exception {
         TransactionRequest transactionRequest = new TransactionRequest(50.0);
         when(userService.currentUser()).thenReturn(user);
         when(walletRepository.findByUser(user)).thenReturn(Optional.of(wallet));
 
         TransactionResponse response = walletService.deposit(transactionRequest);
 
-        assertEquals(150.0, response.getAmount());
+        assertEquals(50.0, response.getAmount());
     }
 
     @Test
-    void testWithdrawAmount50From100() throws Exception {
+    void testWithdrawAmount50FromCurrentUser() throws Exception {
         TransactionRequest transactionRequest = new TransactionRequest(50.0);
         when(userService.currentUser()).thenReturn(user);
         when(walletRepository.findByUser(user)).thenReturn(Optional.of(wallet));
@@ -84,7 +88,7 @@ class WalletServiceTest {
 
         TransactionResponse response = walletService.transfer(transferMoneyRequest);
 
-        assertEquals(70.0, response.getAmount());
+        assertEquals(30.0, response.getAmount());
     }
 
     @Test
