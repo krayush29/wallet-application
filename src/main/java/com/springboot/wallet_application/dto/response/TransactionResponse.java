@@ -1,6 +1,8 @@
 package com.springboot.wallet_application.dto.response;
 
 import com.springboot.wallet_application.entity.Transaction;
+import com.springboot.wallet_application.entity.Wallet;
+import com.springboot.wallet_application.enums.CurrencyType;
 import com.springboot.wallet_application.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,13 +14,15 @@ public class TransactionResponse {
     private TransactionType transactionType;
     private double transactionAmount;
     private double currentBalance;
+    private CurrencyType currencyType;
     private String message;
 
-    public TransactionResponse(Transaction transaction, double currentBalance) {
+    public TransactionResponse(Transaction transaction, Wallet wallet) {
         this.username = transaction.getFromUser().getUsername();
         this.transactionType = transaction.getType();
         this.transactionAmount = transaction.getAmount();
-        this.currentBalance = currentBalance;
+        this.currentBalance = wallet.getBalance();
+        this.currencyType = wallet.getCurrencyType();
         this.message = transaction.getMessage();
     }
 }

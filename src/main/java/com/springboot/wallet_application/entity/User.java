@@ -1,6 +1,7 @@
 package com.springboot.wallet_application.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.springboot.wallet_application.enums.CurrencyType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -46,5 +47,13 @@ public class User {
         this.username = username;
         this.password = password;
         this.wallet = new Wallet();
+    }
+
+    public User(String username, String password, CurrencyType currencyType) {
+        this.username = username;
+        this.password = password;
+        if (currencyType == null) currencyType = CurrencyType.INR;
+
+        this.wallet = new Wallet(currencyType);
     }
 }

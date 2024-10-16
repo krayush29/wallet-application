@@ -1,6 +1,6 @@
 package com.springboot.wallet_application.controller;
 
-import com.springboot.wallet_application.dto.request.UserRequestBody;
+import com.springboot.wallet_application.dto.request.UserRegisterRequest;
 import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.service.UserService;
 import jakarta.validation.Valid;
@@ -26,10 +26,10 @@ public class HomeController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Object> registerUser(@RequestBody @Valid UserRequestBody UserRequestBody) {
+    public ResponseEntity<Object> register(@RequestBody @Valid UserRegisterRequest UserRegisterRequest) {
         User userResponse;
         try {
-            userResponse = userService.registerUser(UserRequestBody);
+            userResponse = userService.registerUser(UserRegisterRequest);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

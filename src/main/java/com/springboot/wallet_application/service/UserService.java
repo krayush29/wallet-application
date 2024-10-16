@@ -1,6 +1,6 @@
 package com.springboot.wallet_application.service;
 
-import com.springboot.wallet_application.dto.request.UserRequestBody;
+import com.springboot.wallet_application.dto.request.UserRegisterRequest;
 import com.springboot.wallet_application.dto.response.BalanceResponse;
 import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.entity.Wallet;
@@ -21,15 +21,15 @@ public class UserService {
     @Autowired
     private WalletRepository walletRepository;
 
-    public User registerUser(UserRequestBody userRequest) {
-        User user = new User(userRequest.getUsername(), userRequest.getPassword());
+    public User registerUser(UserRegisterRequest userRequest) {
+        User user = new User(userRequest.getUsername(), userRequest.getPassword(), userRequest.getCurrencyType());
         return userRepository.save(user);
     }
 
     public BalanceResponse getBalance() {
         Wallet wallet = walletRepository.findByUser(currentUser())
                 .orElseThrow(() -> new WalletException("Wallet not found for user: " + currentUsername()));
-        return new BalanceResponse(currentUsername(), wallet.getBalance());
+        return new BalanceResponse(currentUsername(), wallet);
     }
 
     public BalanceResponse getBalanceByUserId(Long userId) {
@@ -38,7 +38,7 @@ public class UserService {
         Wallet wallet = walletRepository.findByUser(user)
                 .orElseThrow(() -> new WalletException("Wallet not found for user: " + user.getUsername()));
 
-        return new BalanceResponse(user.getUsername(), wallet.getBalance());
+        return new BalanceResponse(user.getUsername(), wallet);
     }
 
     public User currentUser() {

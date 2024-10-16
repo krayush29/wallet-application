@@ -2,6 +2,7 @@ package com.springboot.wallet_application.controller;
 
 
 import com.springboot.wallet_application.dto.response.BalanceResponse;
+import com.springboot.wallet_application.enums.CurrencyType;
 import com.springboot.wallet_application.exception.UserNotFoundException;
 import com.springboot.wallet_application.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +37,7 @@ class UserControllerTest {
 
     @Test
     void testBalance() throws Exception {
-        BalanceResponse balanceResponse = new BalanceResponse("username", 100.0);
+        BalanceResponse balanceResponse = new BalanceResponse("username", 100.0, CurrencyType.INR);
         when(userService.getBalance()).thenReturn(balanceResponse);
 
         mockMvc.perform(get("/users/balance"))
@@ -46,7 +47,7 @@ class UserControllerTest {
 
     @Test
     void testBalanceByUserId() throws Exception {
-        BalanceResponse balanceResponse = new BalanceResponse("username", 100.0);
+        BalanceResponse balanceResponse = new BalanceResponse("username", 100.0, CurrencyType.INR);
         when(userService.getBalanceByUserId(1L)).thenReturn(balanceResponse);
 
         mockMvc.perform(get("/users/1/balance"))

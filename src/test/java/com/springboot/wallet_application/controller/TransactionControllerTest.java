@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.wallet_application.dto.request.TransactionRequest;
 import com.springboot.wallet_application.dto.request.TransferMoneyRequest;
 import com.springboot.wallet_application.dto.response.TransactionResponse;
+import com.springboot.wallet_application.enums.CurrencyType;
 import com.springboot.wallet_application.enums.TransactionType;
 import com.springboot.wallet_application.service.TransactionService;
 import com.springboot.wallet_application.service.WalletService;
@@ -78,7 +79,7 @@ class TransactionControllerTest {
     @Test
     void testDepositAmount100withResponseOk() throws Exception {
         TransactionRequest transactionRequest = new TransactionRequest(100.0);
-        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.DEPOSIT, 100.0, 200.0, "message");
+        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.DEPOSIT, 100.0, 200.0, CurrencyType.INR, "message");
 
         when(walletService.deposit(any(TransactionRequest.class))).thenReturn(transactionResponse);
 
@@ -94,7 +95,7 @@ class TransactionControllerTest {
     @Test
     void testWithdrawAmount50withResponseOk() throws Exception {
         TransactionRequest transactionRequest = new TransactionRequest(50.0);
-        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.WITHDRAWAL, 50.0, 150.0, "message");
+        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.WITHDRAWAL, 50.0, 150.0, CurrencyType.INR, "message");
 
         when(walletService.withdraw(any(TransactionRequest.class))).thenReturn(transactionResponse);
 
@@ -110,7 +111,7 @@ class TransactionControllerTest {
     @Test
     void testTransferAmount30withResponseOk() throws Exception {
         TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest("recipient", 30.0);
-        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.TRANSFER, 30.0, 120.0, "message");
+        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.TRANSFER, 30.0, 120.0, CurrencyType.INR, "message");
 
         when(walletService.transfer(any(TransferMoneyRequest.class))).thenReturn(transactionResponse);
 

@@ -1,6 +1,6 @@
 package com.springboot.wallet_application.service;
 
-import com.springboot.wallet_application.dto.request.UserRequestBody;
+import com.springboot.wallet_application.dto.request.UserRegisterRequest;
 import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,7 +32,7 @@ class UserServiceTest {
     @Test
     void testRegisterUserWithValidUser() {
         User user = new User("tonyStark", "password123");
-        UserRequestBody userRequest = new UserRequestBody("tonyStark", "password123");
+        UserRegisterRequest userRequest = new UserRegisterRequest("tonyStark", "password123");
         when(userRepository.save(any(User.class))).thenReturn(user);
 
         User registeredUser = userService.registerUser(userRequest);

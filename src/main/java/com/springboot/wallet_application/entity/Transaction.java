@@ -1,5 +1,6 @@
 package com.springboot.wallet_application.entity;
 
+import com.springboot.wallet_application.enums.CurrencyType;
 import com.springboot.wallet_application.enums.TransactionType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,19 +44,34 @@ public class Transaction {
 
     private String message;
 
-    public Transaction(User fromUser, User toUser, TransactionType type, double amount, String message) {
+    public Transaction(User fromUser, User toUser, TransactionType type, double amount, CurrencyType paymentCurrency) {
         this.fromUser = fromUser;
         this.toUser = toUser;
         this.type = type;
         this.amount = amount;
-        this.message = message;
+        this.message = getMessage(fromUser, toUser, type, amount, paymentCurrency);
     }
 
-    public Transaction(User fromUser, TransactionType type, double amount, String message) {
+    public Transaction(User fromUser, TransactionType type, double amount, CurrencyType paymentCurrency) {
         this.fromUser = fromUser;
         this.toUser = fromUser;
         this.type = type;
         this.amount = amount;
-        this.message = message;
+        this.message = getMessage(fromUser, fromUser, type, amount, paymentCurrency);
+    }
+
+    private String getMessage(User fromUser, User toUser, TransactionType type, double amount, CurrencyType paymentCurrency) {
+
+        if (TransactionType.DEPOSIT.equals(type)) {
+            return String.format("Deposited amount %.2f (%s) to %s", amount, paymentCurrency, fromUser.getUsername());
+        } else if (TransactionType.WITHDRAWAL.equals(type)) {
+            return String.format("Deducted amount %.2f (%s) from %s", amount, paymentCurrency, toUser.getUsername());
+        } else {
+            return String.format("Transferred amount %.2f (%s) to %s from %s",
+                    amount,
+                    toUser.getWallet().getCurrencyType(),
+                    toUser.getUsername(),
+                    fromUser.getUsername());
+        }
     }
 }

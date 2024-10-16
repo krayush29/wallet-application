@@ -36,10 +36,9 @@ public class WalletService {
             walletRepository.save(wallet);
 
             // Create and Save transaction
-            String message = "Deposited amount " + transactionRequest.getAmount() + " to " + userService.currentUsername();
-            Transaction transaction = new Transaction(userService.currentUser(), TransactionType.DEPOSIT, transactionRequest.getAmount(), message);
+            Transaction transaction = new Transaction(userService.currentUser(), TransactionType.DEPOSIT, transactionRequest.getAmount(), wallet.getCurrencyType());
             transactionRepository.save(transaction);
-            transactionResponse = new TransactionResponse(transaction, wallet.getBalance());
+            transactionResponse = new TransactionResponse(transaction, wallet);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -57,10 +56,9 @@ public class WalletService {
             walletRepository.save(wallet);
 
             // Create and Save transaction
-            String message = "Deducted amount " + transactionRequest.getAmount() + " from " + userService.currentUsername();
-            Transaction transaction = new Transaction(userService.currentUser(), TransactionType.WITHDRAWAL, transactionRequest.getAmount(), message);
+            Transaction transaction = new Transaction(userService.currentUser(), TransactionType.WITHDRAWAL, transactionRequest.getAmount(), wallet.getCurrencyType());
             transactionRepository.save(transaction);
-            transactionResponse = new TransactionResponse(transaction, wallet.getBalance());
+            transactionResponse = new TransactionResponse(transaction, wallet);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -82,10 +80,9 @@ public class WalletService {
             walletRepository.save(toWallet);
 
             // Create and Save transaction
-            String message = "Transferred amount " + transferMoneyRequest.getTransferAmount() + " to " + recipient.getUsername() + " from " + userService.currentUsername();
-            Transaction transaction = new Transaction(userService.currentUser(), recipient, TransactionType.TRANSFER, transferMoneyRequest.getTransferAmount(), message);
+            Transaction transaction = new Transaction(userService.currentUser(), recipient, TransactionType.TRANSFER, transferMoneyRequest.getTransferAmount(), toWallet.getCurrencyType());
             transactionRepository.save(transaction);
-            transactionResponse = new TransactionResponse(transaction, fromWallet.getBalance());
+            transactionResponse = new TransactionResponse(transaction, fromWallet);
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

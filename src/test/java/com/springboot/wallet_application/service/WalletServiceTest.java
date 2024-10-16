@@ -6,6 +6,7 @@ import com.springboot.wallet_application.dto.response.TransactionResponse;
 import com.springboot.wallet_application.entity.Transaction;
 import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.entity.Wallet;
+import com.springboot.wallet_application.enums.CurrencyType;
 import com.springboot.wallet_application.exception.WalletException;
 import com.springboot.wallet_application.repository.TransactionRepository;
 import com.springboot.wallet_application.repository.WalletRepository;
@@ -40,7 +41,12 @@ class WalletServiceTest {
     private WalletService walletService;
 
     private User user;
+    private User userINR;
+    private User userUSD;
+
     private Wallet wallet;
+    private Wallet walletINR;
+    private Wallet walletUSD;
 
     @BeforeEach
     void setUp() {
@@ -50,6 +56,18 @@ class WalletServiceTest {
         wallet = new Wallet();
         wallet.setUser(user);
         wallet.setBalance(100.0);
+
+        userINR = new User();
+        userINR.setUsername("userINR");
+        walletINR = new Wallet(CurrencyType.INR);
+        walletINR.setUser(userINR);
+        userINR.setWallet(walletINR);
+
+        userUSD = new User();
+        userUSD.setUsername("userUSD");
+        walletUSD = new Wallet(CurrencyType.USD);
+        walletUSD.setUser(userUSD);
+        userUSD.setWallet(walletUSD);
     }
 
     @Test
@@ -105,5 +123,56 @@ class WalletServiceTest {
         when(walletRepository.findByUser(user)).thenReturn(Optional.empty());
 
         assertThrows(WalletException.class, () -> walletService.deposit(transactionRequest));
+    }
+
+    @Test
+    void testTransferAmountFromINRtoUSD() throws Exception {
+        walletINR.deposit(8500.0); // Assuming 1 USD = 85 INR
+
+        TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest("userUSD", 8500.0);
+
+        when(userService.currentUser()).thenReturn(userINR);
+        when(userService.getUserByUsername("userUSD")).thenReturn(userUSD);
+        when(walletRepository.findByUser(userINR)).thenReturn(Optional.of(walletINR));
+        when(walletRepository.findByUser(userUSD)).thenReturn(Optional.of(walletUSD));
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
+
+        walletService.transfer(transferMoneyRequest);
+
+        assertEquals(0.0, walletINR.getBalance());
+        assertEquals(100.0, walletUSD.getBalance());
+    }
+
+    @Test
+    void testTransferAmountFromUSDtoINR() throws Exception {
+        walletUSD.deposit(100.0); // Assuming 1 USD = 85 INR
+
+        TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest("userINR", 100.0);
+
+        when(userService.currentUser()).thenReturn(userUSD);
+        when(userService.getUserByUsername("userINR")).thenReturn(userINR);
+        when(walletRepository.findByUser(userUSD)).thenReturn(Optional.of(walletUSD));
+        when(walletRepository.findByUser(userINR)).thenReturn(Optional.of(walletINR));
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
+
+        walletService.transfer(transferMoneyRequest);
+
+        assertEquals(0.0, walletUSD.getBalance());
+        assertEquals(8500.0, walletINR.getBalance());
+    }
+
+
+    @Test
+    void testTransferInsufficientBalance() {
+        walletINR.deposit(100.0);
+
+        TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest("userUSD", 8500.0);
+
+        when(userService.currentUser()).thenReturn(userINR);
+        when(userService.getUserByUsername("userUSD")).thenReturn(userUSD);
+        when(walletRepository.findByUser(userINR)).thenReturn(Optional.of(walletINR));
+        when(walletRepository.findByUser(userUSD)).thenReturn(Optional.of(walletUSD));
+
+        assertThrows(Exception.class, () -> walletService.transfer(transferMoneyRequest));
     }
 }
