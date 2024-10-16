@@ -3,7 +3,6 @@ package com.springboot.wallet_application.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.springboot.wallet_application.enums.CurrencyType;
 import com.springboot.wallet_application.exception.WalletException;
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -28,7 +27,6 @@ public class Wallet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(precision = 10, scale = 2)
     private double balance;
 
     @Enumerated(EnumType.STRING)

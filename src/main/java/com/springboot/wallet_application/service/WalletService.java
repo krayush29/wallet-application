@@ -7,7 +7,8 @@ import com.springboot.wallet_application.entity.Transaction;
 import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.entity.Wallet;
 import com.springboot.wallet_application.enums.TransactionType;
-import com.springboot.wallet_application.exception.WalletException;
+import com.springboot.wallet_application.exception.UnauthorizedWalletException;
+import com.springboot.wallet_application.exception.WalletNotFoundException;
 import com.springboot.wallet_application.repository.TransactionRepository;
 import com.springboot.wallet_application.repository.WalletRepository;
 import jakarta.transaction.Transactional;
@@ -27,8 +28,8 @@ public class WalletService {
     private TransactionRepository transactionRepository;
 
     @Transactional
-    public TransactionResponse deposit(TransactionRequest transactionRequest) throws Exception {
-        Wallet wallet = getCurrentUserWallet();
+    public TransactionResponse deposit(long walletId, TransactionRequest transactionRequest) throws Exception {
+        Wallet wallet = getCurrentUserWallet(walletId);
         TransactionResponse transactionResponse;
 
         try {
@@ -47,8 +48,8 @@ public class WalletService {
     }
 
     @Transactional
-    public TransactionResponse withdraw(TransactionRequest transactionRequest) throws Exception {
-        Wallet wallet = getCurrentUserWallet();
+    public TransactionResponse withdraw(long walletId, TransactionRequest transactionRequest) throws Exception {
+        Wallet wallet = getCurrentUserWallet(walletId);
         TransactionResponse transactionResponse;
 
         try {
@@ -67,8 +68,8 @@ public class WalletService {
     }
 
     @Transactional
-    public TransactionResponse transfer(TransferMoneyRequest transferMoneyRequest) throws Exception {
-        Wallet fromWallet = getCurrentUserWallet();
+    public TransactionResponse transfer(long walletId, TransferMoneyRequest transferMoneyRequest) throws Exception {
+        Wallet fromWallet = getCurrentUserWallet(walletId);
         User recipient = userService.getUserByUsername(transferMoneyRequest.getRecipientUsername());
         Wallet toWallet = getUserWallet(recipient);
 
@@ -91,10 +92,16 @@ public class WalletService {
     }
 
     private Wallet getUserWallet(User user) {
-        return walletRepository.findByUser(user).orElseThrow(() -> new WalletException("Wallet not found for user: " + userService.currentUser().getUsername()));
+        return walletRepository.findByUser(user).orElseThrow(() -> new WalletNotFoundException("Wallet not found for user: " + userService.currentUser().getUsername()));
     }
 
-    private Wallet getCurrentUserWallet() {
-        return walletRepository.findByUser(userService.currentUser()).orElseThrow(() -> new WalletException("Wallet not found for user: " + userService.currentUsername()));
+    public Wallet getCurrentUserWallet(long walletId) {
+        Wallet wallet = walletRepository.findById(walletId).orElseThrow(() -> new WalletNotFoundException("Wallet not found for id: " + walletId));
+
+        if (!walletRepository.existsByIdAndUser(wallet.getId(), userService.currentUser())) {
+            throw new UnauthorizedWalletException("Unauthorized wallet for user: " + userService.currentUsername());
+        }
+
+        return wallet;
     }
 }

@@ -69,7 +69,7 @@ public class Transaction {
         } else {
             return String.format("Transferred amount %.2f (%s) to %s from %s",
                     amount,
-                    toUser.getWallet().getCurrencyType(),
+                    fromUser.getWallet().getCurrencyType(),
                     toUser.getUsername(),
                     fromUser.getUsername());
         }
