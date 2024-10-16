@@ -2,6 +2,7 @@ package com.springboot.wallet_application.controller;
 
 import com.springboot.wallet_application.dto.request.TransactionRequest;
 import com.springboot.wallet_application.dto.request.TransferMoneyRequest;
+import com.springboot.wallet_application.dto.response.TransactionHistoryResponse;
 import com.springboot.wallet_application.dto.response.TransactionResponse;
 import com.springboot.wallet_application.enums.TransactionType;
 import com.springboot.wallet_application.exception.UserNotFoundException;
@@ -42,7 +43,7 @@ public class TransactionController {
             return ResponseEntity.badRequest().body("Invalid URI or Query parameters");
         }
 
-        List<TransactionResponse> transactions;
+        List<TransactionHistoryResponse> transactions;
         List<TransactionType> transactionTypes = new ArrayList<>();
 
         if (types != null) {

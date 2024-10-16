@@ -10,13 +10,15 @@ import lombok.Data;
 public class TransactionResponse {
     private String username;
     private TransactionType transactionType;
-    private double amount;
+    private double transactionAmount;
+    private double currentBalance;
     private String message;
 
-    public TransactionResponse(Transaction transaction) {
+    public TransactionResponse(Transaction transaction, double currentBalance) {
         this.username = transaction.getFromUser().getUsername();
         this.transactionType = transaction.getType();
-        this.amount = transaction.getAmount();
+        this.transactionAmount = transaction.getAmount();
+        this.currentBalance = currentBalance;
         this.message = transaction.getMessage();
     }
 }

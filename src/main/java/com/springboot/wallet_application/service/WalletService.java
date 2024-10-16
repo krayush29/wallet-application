@@ -39,7 +39,7 @@ public class WalletService {
             String message = "Deposited amount " + transactionRequest.getAmount() + " to " + userService.currentUsername();
             Transaction transaction = new Transaction(userService.currentUser(), TransactionType.DEPOSIT, transactionRequest.getAmount(), message);
             transactionRepository.save(transaction);
-            transactionResponse = new TransactionResponse(transaction);
+            transactionResponse = new TransactionResponse(transaction, wallet.getBalance());
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -60,7 +60,7 @@ public class WalletService {
             String message = "Deducted amount " + transactionRequest.getAmount() + " from " + userService.currentUsername();
             Transaction transaction = new Transaction(userService.currentUser(), TransactionType.WITHDRAWAL, transactionRequest.getAmount(), message);
             transactionRepository.save(transaction);
-            transactionResponse = new TransactionResponse(transaction);
+            transactionResponse = new TransactionResponse(transaction, wallet.getBalance());
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }
@@ -82,10 +82,10 @@ public class WalletService {
             walletRepository.save(toWallet);
 
             // Create and Save transaction
-            String message = "Transferred amount " + transferMoneyRequest.getTransferAmount() + " to " + recipient + " from " + userService.currentUsername();
+            String message = "Transferred amount " + transferMoneyRequest.getTransferAmount() + " to " + recipient.getUsername() + " from " + userService.currentUsername();
             Transaction transaction = new Transaction(userService.currentUser(), recipient, TransactionType.TRANSFER, transferMoneyRequest.getTransferAmount(), message);
             transactionRepository.save(transaction);
-            transactionResponse = new TransactionResponse(transaction);
+            transactionResponse = new TransactionResponse(transaction, fromWallet.getBalance());
         } catch (Exception e) {
             throw new Exception(e.getMessage());
         }

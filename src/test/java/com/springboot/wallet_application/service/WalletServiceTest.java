@@ -3,6 +3,7 @@ package com.springboot.wallet_application.service;
 import com.springboot.wallet_application.dto.request.TransactionRequest;
 import com.springboot.wallet_application.dto.request.TransferMoneyRequest;
 import com.springboot.wallet_application.dto.response.TransactionResponse;
+import com.springboot.wallet_application.entity.Transaction;
 import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.entity.Wallet;
 import com.springboot.wallet_application.exception.WalletException;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -55,10 +57,12 @@ class WalletServiceTest {
         TransactionRequest transactionRequest = new TransactionRequest(50.0);
         when(userService.currentUser()).thenReturn(user);
         when(walletRepository.findByUser(user)).thenReturn(Optional.of(wallet));
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
 
         TransactionResponse response = walletService.deposit(transactionRequest);
 
-        assertEquals(50.0, response.getAmount());
+        assertEquals(50.0, response.getTransactionAmount());
+        assertEquals(150.0, response.getCurrentBalance());
     }
 
     @Test
@@ -66,10 +70,12 @@ class WalletServiceTest {
         TransactionRequest transactionRequest = new TransactionRequest(50.0);
         when(userService.currentUser()).thenReturn(user);
         when(walletRepository.findByUser(user)).thenReturn(Optional.of(wallet));
+        when(transactionRepository.save(any(Transaction.class))).thenReturn(new Transaction());
 
         TransactionResponse response = walletService.withdraw(transactionRequest);
 
-        assertEquals(50.0, response.getAmount());
+        assertEquals(50.0, response.getTransactionAmount());
+        assertEquals(50.0, response.getCurrentBalance());
     }
 
     @Test
@@ -88,7 +94,8 @@ class WalletServiceTest {
 
         TransactionResponse response = walletService.transfer(transferMoneyRequest);
 
-        assertEquals(30.0, response.getAmount());
+        assertEquals(30.0, response.getTransactionAmount());
+        assertEquals(70.0, response.getCurrentBalance());
     }
 
     @Test
