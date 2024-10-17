@@ -7,6 +7,8 @@ import com.springboot.wallet_application.enums.TransactionType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.format.DateTimeFormatter;
+
 @Data
 @AllArgsConstructor
 public class TransactionResponse {
@@ -16,6 +18,7 @@ public class TransactionResponse {
     private double currentBalance;
     private CurrencyType currencyType;
     private String message;
+    private String timestamp;
 
     public TransactionResponse(Transaction transaction, Wallet wallet) {
         this.username = transaction.getFromUser().getUsername();
@@ -24,5 +27,7 @@ public class TransactionResponse {
         this.currentBalance = wallet.getBalance();
         this.currencyType = wallet.getCurrencyType();
         this.message = transaction.getMessage();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.timestamp = transaction.getTimestamp().format(formatter);
     }
 }

@@ -40,7 +40,7 @@ class WalletControllerTest {
     @Test
     void testDepositAmount100withResponseOk() throws Exception {
         TransactionRequest transactionRequest = new TransactionRequest(100.0);
-        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.DEPOSIT, 100.0, 200.0, CurrencyType.INR, "message");
+        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.DEPOSIT, 100.0, 200.0, CurrencyType.INR, "message", "time");
 
         when(walletService.deposit(any(Long.class), any(TransactionRequest.class))).thenReturn(transactionResponse);
 
@@ -56,7 +56,7 @@ class WalletControllerTest {
     @Test
     void testWithdrawAmount50withResponseOk() throws Exception {
         TransactionRequest transactionRequest = new TransactionRequest(50.0);
-        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.WITHDRAWAL, 50.0, 150.0, CurrencyType.INR, "message");
+        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.WITHDRAWAL, 50.0, 150.0, CurrencyType.INR, "message", "time");
 
         when(walletService.withdraw(any(Long.class), any(TransactionRequest.class))).thenReturn(transactionResponse);
 
@@ -72,7 +72,7 @@ class WalletControllerTest {
     @Test
     void testTransferAmount30withResponseOk() throws Exception {
         TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest("recipient", 30.0);
-        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.TRANSFER, 30.0, 120.0, CurrencyType.INR, "message");
+        TransactionResponse transactionResponse = new TransactionResponse("user", TransactionType.TRANSFER, 30.0, 120.0, CurrencyType.INR, "message", "time");
 
         when(walletService.transfer(any(Long.class), any(TransferMoneyRequest.class))).thenReturn(transactionResponse);
 

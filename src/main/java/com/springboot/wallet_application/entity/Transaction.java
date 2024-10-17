@@ -16,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,6 +44,9 @@ public class Transaction {
     @Column(nullable = false)
     private double amount;
 
+    @Column(nullable = false)
+    private LocalDateTime timestamp;
+
     private String message;
 
     public Transaction(User fromUser, User toUser, TransactionType type, double amount, CurrencyType paymentCurrency) {
@@ -50,6 +55,7 @@ public class Transaction {
         this.type = type;
         this.amount = amount;
         this.message = getMessage(fromUser, toUser, type, amount, paymentCurrency);
+        this.timestamp = LocalDateTime.now();
     }
 
     public Transaction(User fromUser, TransactionType type, double amount, CurrencyType paymentCurrency) {
@@ -58,6 +64,7 @@ public class Transaction {
         this.type = type;
         this.amount = amount;
         this.message = getMessage(fromUser, fromUser, type, amount, paymentCurrency);
+        this.timestamp = LocalDateTime.now();
     }
 
     private String getMessage(User fromUser, User toUser, TransactionType type, double amount, CurrencyType paymentCurrency) {
