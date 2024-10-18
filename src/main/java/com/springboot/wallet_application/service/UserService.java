@@ -23,7 +23,7 @@ public class UserService {
     private WalletRepository walletRepository;
 
     public User registerUser(UserRegisterRequest userRequest) {
-        if (getUserByUsername(userRequest.getUsername()) != null) {
+        if (userRepository.existsByUsername(userRequest.getUsername())) {
             throw new DuplicateUsernameException("Username already exists: " + userRequest.getUsername());
         }
 
