@@ -1,11 +1,12 @@
 package com.springboot.wallet_application.service;
 
 import com.springboot.wallet_application.dto.request.UserRegisterRequest;
-import com.springboot.wallet_application.dto.response.BalanceResponse;
+import com.springboot.wallet_application.dto.response.UserResponse;
 import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.entity.Wallet;
+import com.springboot.wallet_application.exception.DuplicateUsernameException;
 import com.springboot.wallet_application.exception.UserNotFoundException;
-import com.springboot.wallet_application.exception.WalletException;
+import com.springboot.wallet_application.exception.WalletNotFoundException;
 import com.springboot.wallet_application.repository.UserRepository;
 import com.springboot.wallet_application.repository.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,23 +23,18 @@ public class UserService {
     private WalletRepository walletRepository;
 
     public User registerUser(UserRegisterRequest userRequest) {
+        if (getUserByUsername(userRequest.getUsername()) != null) {
+            throw new DuplicateUsernameException("Username already exists: " + userRequest.getUsername());
+        }
+
         User user = new User(userRequest.getUsername(), userRequest.getPassword(), userRequest.getCurrencyType());
         return userRepository.save(user);
     }
 
-    public BalanceResponse getBalance() {
+    public UserResponse getUserDetail() {
         Wallet wallet = walletRepository.findByUser(currentUser())
-                .orElseThrow(() -> new WalletException("Wallet not found for user: " + currentUsername()));
-        return new BalanceResponse(currentUsername(), wallet);
-    }
-
-    public BalanceResponse getBalanceByUserId(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found for id: " + userId));
-        Wallet wallet = walletRepository.findByUser(user)
-                .orElseThrow(() -> new WalletException("Wallet not found for user: " + user.getUsername()));
-
-        return new BalanceResponse(user.getUsername(), wallet);
+                .orElseThrow(() -> new WalletNotFoundException("Wallet not found for user: " + currentUsername()));
+        return new UserResponse(currentUsername(), wallet);
     }
 
     public User currentUser() {

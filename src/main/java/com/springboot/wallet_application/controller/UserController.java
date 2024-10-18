@@ -1,13 +1,16 @@
 package com.springboot.wallet_application.controller;
 
-import com.springboot.wallet_application.dto.response.BalanceResponse;
-import com.springboot.wallet_application.exception.UserNotFoundException;
+import com.springboot.wallet_application.dto.request.UserRegisterRequest;
+import com.springboot.wallet_application.dto.response.UserResponse;
+import com.springboot.wallet_application.entity.User;
 import com.springboot.wallet_application.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,33 +21,17 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/balance")
-    public ResponseEntity<Object> balance() {
-        BalanceResponse balanceResponse;
-        try {
-            balanceResponse = userService.getBalance();
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-
-        return ResponseEntity.ok(balanceResponse);
+    @Operation(summary = "Register a new user", description = "Registers a new user with the provided details. By Default currency will be INR")
+    @PostMapping
+    public ResponseEntity<Object> create(@RequestBody @Valid UserRegisterRequest UserRegisterRequest) {
+        User userResponse = userService.registerUser(UserRegisterRequest);
+        return ResponseEntity.ok(userResponse);
     }
 
-    // Just a Helper API to get balance by userId
-    // Not recommended as It is not secure to expose balance of any user
-    @GetMapping("/{userId}/balance")
-    public ResponseEntity<Object> balanceByUserId(@PathVariable Long userId) {
-        BalanceResponse balanceResponse;
-        try {
-            balanceResponse = userService.getBalanceByUserId(userId);
-        } catch (UserNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
-
-        return ResponseEntity.ok(balanceResponse);
+    @Operation(summary = "Get current user details", description = "Fetches the details of the currently authenticated user.")
+    @GetMapping()
+    public ResponseEntity<Object> getUser() {
+        UserResponse userResponse = userService.getUserDetail();
+        return ResponseEntity.ok(userResponse);
     }
 }
