@@ -65,6 +65,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 
+    @ExceptionHandler(InvalidTransactionException.class)
+    public ResponseEntity<String> handleInvalidTransactionException(InvalidTransactionException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
     @ExceptionHandler(InvalidFormatException.class)
     public ResponseEntity<Object> handleInvalidFormatException(InvalidFormatException ex, WebRequest request) {
         String message = "Invalid value for field: " + ex.getPath().getFirst().getFieldName() + ". " + ex.getOriginalMessage();
