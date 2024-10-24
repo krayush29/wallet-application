@@ -59,18 +59,6 @@ public class Wallet {
         this.balance -= roundOf(amount);
     }
 
-    public void transfer(Wallet toWallet, double transferAmount) {
-        double amountInRecipientCurrency = this.convert(this.currencyType, toWallet.currencyType, transferAmount);
-
-        this.withdraw(roundOf(transferAmount));
-        toWallet.deposit(amountInRecipientCurrency);
-    }
-
-    public double convert(CurrencyType fromCurrency, CurrencyType toCurrency, double amount) {
-        double baseValue = fromCurrency.toBase(amount);
-        return roundOf(toCurrency.fromBase(baseValue));
-    }
-
     private double roundOf(double value) {
         return new BigDecimal(value).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }

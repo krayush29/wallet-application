@@ -38,6 +38,9 @@ public class TransactionService {
     @Autowired
     private WalletService walletService;
 
+    @Autowired
+    CurrencyConversionService conversionService;
+
     public List<TransactionHistoryResponse> getAllTransactions(List<TransactionType> transactionTypes) {
         User user = userService.currentUser();
 
@@ -151,7 +154,10 @@ public class TransactionService {
         TransferTransactionResponse transferTransactionResponse;
 
         try {
-            fromWallet.transfer(toWallet, request.getAmount());
+            double convertedAmount = conversionService.convert(fromWallet.getCurrencyType(), toWallet.getCurrencyType(), request.getAmount());
+            fromWallet.withdraw(request.getAmount());
+            toWallet.deposit(convertedAmount);
+
             walletService.save(fromWallet);
             walletService.save(toWallet);
 

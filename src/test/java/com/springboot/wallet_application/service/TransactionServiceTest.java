@@ -16,7 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,6 +33,9 @@ class TransactionServiceTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private CurrencyConversionService conversionService;
 
     @Mock
     private WalletService walletService;
@@ -89,19 +94,21 @@ class TransactionServiceTest {
         request.setAmount(200.0);
         request.setRecipientUsername("recipientUser");
 
-        User user = new User();
+        User currentUser = new User();
         Wallet fromWallet = new Wallet();
         fromWallet.setBalance(500.0);
-        user.setWallet(fromWallet);
+        currentUser.setWallet(fromWallet);
+
         User recipientUser = new User();
         Wallet toWallet = new Wallet();
 
-        when(userService.currentUser()).thenReturn(user);
-        when(walletService.getUserWallet(user)).thenReturn(fromWallet);
+        when(userService.currentUser()).thenReturn(currentUser);
+        when(walletService.getUserWallet(currentUser)).thenReturn(fromWallet);
         when(userService.getUserByUsername("recipientUser")).thenReturn(recipientUser);
         when(walletService.getUserWallet(recipientUser)).thenReturn(toWallet);
+        when(conversionService.convert(fromWallet.getCurrencyType(), toWallet.getCurrencyType(), request.getAmount())).thenReturn(200.0);
 
-        TransferTransactionResponse response = (TransferTransactionResponse) transactionService.createTransaction(request);
+        TransferTransactionResponse response = transactionService.transferAmount(request);
 
         assertNotNull(response);
         verify(walletService, times(1)).save(fromWallet);
